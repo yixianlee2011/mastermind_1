@@ -16,7 +16,7 @@
     <link href="css/scrolling-nav.css" rel="stylesheet" type="text/css">
 
 
-
+	
   <script language='JavaScript' src='js/mastermind.js'></script>
 	
 	
@@ -82,12 +82,13 @@
 		
 		$('#verifyBot').click(function() {			
 			var t = $('#testCode').val();
-			var bc = $('#botCode').val();  
+			var bc = $('#botCode').val();
+
 			$.ajax({
 			      type: "POST",
-            url: "/api/verify_service_m",
+			      url: "service_servlet",
 			      data: { "tests" : t, "bots_code" : bc  },
-				    success : function(data){
+				  success : function(data){
 			              $('#result').html(data);
 			              var d = JSON.parse(data);
 			              
@@ -100,7 +101,8 @@
 			              }
 	          	}			       
 			  });
-		});
+		});	
+		
 	});
 </script>
     
@@ -242,9 +244,14 @@
                      <li class="page-scroll">
                         <a href="#new_bot">Add New Bot</a>
                     </li>
+                     
                     <li class="page-scroll">
                         <a href="#score_board">Bots Scoring Board</a>
-                    </li>                    
+                    </li>   
+                    
+                    <li class="page-scroll">
+                        <a href="/the_challenge.html">The Challenge</a>
+                    </li>                 
                                       
                     <li>
                     
@@ -348,6 +355,10 @@
                     </div>
                     
                     <div class="page-scroll">
+                        <a class="btn btn-default" href="#challenge">The Challenge</a>  Do you think YOUR BOTS can rise up the ranks and challenge other bots?
+                    </div>
+                    
+                    <div class="page-scroll">
                         <a class="btn btn-default" href="#score_board">Bots Scording bot</a>  See which bot win the MOST GAMES!
                     </div>
                     
@@ -360,7 +371,7 @@
                     
                     <br/>
                     *Only JAVASCRIPT is supported for now. (:<br/>
-                    *This is only VERSION 2.0. Look forward for an updated version in a few days time!
+                    *This is only VERSION 1.0. Look forward for an updated version in a few days time!
                     
                     
                     </p>
@@ -495,7 +506,7 @@
 							        <!-- tr with "Guess" button will be added here. -->
 								<tr id='blackLineTr'>
 								  <td colspan=8 align="center">
-								    <img src="blackpixel.gif" id="blackHorizontalTd"
+                    <img src="Image/blackpixel.gif" id="blackHorizontalTd"
 									 width = "100%" height=3 border=0>
 								  </td>
 								</tr><tr>
@@ -545,7 +556,7 @@
                     <table align="center">
                     
                     <tr>
-                    <td><b>Bot Name:</b></td> <td><input type="text" id="botInput" name="botInput" placeholder="Bot Name"></td>
+                    <td><b>Bot Name:</b></td> <td><input type="text" id="botInput" name="botInput" placeholder="Bot Name" style="margin: 0px; width: 360px;"></td>
                     </tr>
                     
                     <tr>
@@ -720,33 +731,10 @@
                 </div>
             </div>
         </div>
+        
+       
+        
     </section>
-
-	<!-- TABLE CSS -->
-	<style type="text/css">
-	table.imagetable {
-		font-family: verdana,arial,sans-serif;
-		font-size:11px;
-		color:#333333;
-		border-width: 1px;
-		border-color: #999999;
-		border-collapse: collapse;
-	}
-	table.imagetable th {
-		background:#b5cfd2 url('cell-blue.jpg');
-		border-width: 1px;
-		padding: 8px;
-		border-style: solid;
-		border-color: #999999;
-	}
-	table.imagetable td {
-		background:#dcddc0 url('cell-grey.jpg');
-		border-width: 1px;
-		padding: 8px;
-		border-style: solid;
-		border-color: #999999;
-	}
-	</style>
 
 
 
@@ -755,6 +743,32 @@
             <div class="row">
                 <div class="col-lg-12">
                     <h1>Bots Scoring Board</h1>
+                    
+                     <!-- TABLE CSS -->
+					<style type="text/css">
+					table.imagetable {
+						font-family: verdana,arial,sans-serif;
+						font-size:11px;
+						color:#333333;
+						border-width: 1px;
+						border-color: #999999;
+						border-collapse: collapse;
+					}
+					table.imagetable th {
+						background:#b5cfd2 url('cell-blue.jpg');
+						border-width: 1px;
+						padding: 8px;
+						border-style: solid;
+						border-color: #999999;
+					}
+					table.imagetable td {
+						background:#dcddc0 url('cell-grey.jpg');
+						border-width: 1px;
+						padding: 8px;
+						border-style: solid;
+						border-color: #999999;
+					}
+					</style>
                     
                     <table id="leaderboardTable" class="imagetable" align="center">
                     <tr><th>Bot Name</th>
@@ -769,8 +783,7 @@
 						(Assuming the machine's Elo rating is 1000, which is slightly higher than a beginner's rating at 800)
 						Score = [(Total ratings for all opponents)+400*(#Wins-#Losses)]/Games
 					-->
-					<input type="text" id="nameInput" placeholder="Name">
-					<input type="text" id="scoreInput" placeholder="Score">
+					
 					
 					
 					
@@ -858,9 +871,10 @@
     
     <p align="center">
     <br/>
-    &copy; Mastermind Coding Game. Version 1.0
+    &copy; Mastermind Coding Game. Version 2.0
     </p>
     </section>
+    
     
     
 

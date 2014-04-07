@@ -47,6 +47,13 @@ of those sections to manage the look and feel of the site. */
     background: #fff;
 }
 
+.challenge-section {
+    height: auto;
+    padding-top: 50px;
+    text-align: center;
+    background: #fff;
+}
+
 .score-section {
     height: auto;
     padding-top: 20px;

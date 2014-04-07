@@ -20,4 +20,4 @@ after_success:
 - google_appengine/appcfg.py --oauth2_refresh_token=$MY_GAE_TOKEN update deploy/
 env:
   global:
-    secure: SwhkzEOs4jQrrWXSF6pfq+cysUlipltu6uWsFpKZXWzpYSb9szOCDZ+M0JWnw1rAiIrwmTdecOJWODLMKJuuvEljJt7WIL3PwS22KO12+4N5s0WStH65spOUs8+/QUFxtMOQ8MQavP9P+y0jK24UtUhB201pvoKwkU340Cern2Y=
+    secure: BZASLjvfSXxaeHF2UIN21AQjwaCdjBBfMcY0SE//Q8rChR2/CZ8ssPnQLtqWnn2tRY1yDW3wp/tWZ7cUPPRo+Bm26g8jCKpC3gXhYRFF31msp6uw/nGA8bBzK5P7kOdUI4BNJxG1Czc1rvwcRC9QZ5eXL9zV2s/huGvssR1bWjA=

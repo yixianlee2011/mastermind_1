@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Mastermind Coding Game</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
+
+    <!-- Custom CSS -->
+    <link href="css/scrolling-nav.css" rel="stylesheet" type="text/css">
+
+
+	
+  <script language='JavaScript' src='js/mastermind.js'></script>
+	
+	
+	<!-- Logging in -->
+	<script src='https://cdn.firebase.com/js/simple-login/1.3.2/firebase-simple-login.js'></script>
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.7/angular.min.js"></script>
+	 <script src="//cdn.firebase.com/js/client/1.0.6/firebase.js"></script>
+	 <script src="//cdn.firebase.com/libs/angularfire/0.7.1/angularfire.min.js"></script>
+	 <script src="app.js"></script>
+	 
+    <!-- Enable google analytics -->
+    <script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+	
+	  ga('create', 'UA-49265214-1', 'icyyxer.appspot.com');
+	  ga('send', 'pageview');
+	
+	</script>
+	
+	<script type="text/javascript">
+	var _gaq = _gaq || [];
+	_gaq.push(['_setAccount', 'UA-49265214-1']);
+	_gaq.push(['_trackPageview']);
+	(function() {
+	var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	})();
+	</script>
+	<!-- Enabling Google Analytics Social Tracking code Starts Here -->
+	<script type="text/javascript" src="http://icyyxer.appspot.com/wp-content/uploads/ga_social_tracking.js"></script>
+	<!-- Enabling Google Analytics Social Tracking code Ends Here -->
+	
+	
+	<meta property="og:title" content="Mastermind Coding Game"/> 
+    <meta property="og:type" content="website"/> 
+    <meta property="og:url" content="http://icyyxer.appspot.com/"/>
+    <meta property="og:image" content="http://icyyxer.appspot.com/MASTERMINDCODINGLOGO.jpg"/>   
+    <meta property="og:description" content="Think you can code the best next move for Mastermind? Challenge the other pro coders from around the world in Mastermind!"/>
+    
+    
+    
+    <!-- firebase -->
+    
+     <script src="https://cdn.firebase.com/v0/firebase.js"></script>
+ 	 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+    
+    <!-- version 1.1; see mastermind.js for comments  -->
+    
+    
+ <!-- verify code  -->
+ <script src="js/jquery-1.10.2.js"></script>
+ <script>
+	$(document).ready(function() {
+		
+		$('#botCode').keyup(function (){
+			$('#createBot').attr("disabled","disabled");
+			$('#result').html("");
+		});
+		
+		$('#verifyBot').click(function() {			
+			var t = $('#testCode').val();
+			var bc = $('#botCode').val();
+
+			$.ajax({
+			      type: "POST",
+			      url: "service_servlet",
+			      data: { "tests" : t, "bots_code" : bc  },
+				  success : function(data){
+			              $('#result').html(data);
+			              var d = JSON.parse(data);
+			              
+			              //enable the button
+			              if (d.solved ==true){
+			            	  alert("Code Verifed, You can submit it now");
+			            	  $('#createBot').removeAttr("disabled");
+			              }else{
+			            	  alert("Error, Please look at the error message below.\n< Note!, any changes to the code will clear the message. >");
+			              }
+	          	}			       
+			  });
+		});	
+		
+	});
+</script>
+    
+	
+</head>
+
+<!-- The #page-top ID is part of the scrolling feature - the data-spy and data-target are part of the built-in Bootstrap scrollspy function -->
+<body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top" onload="init()">
+
+
+<!-- FB likes/shares  -->
+  <div id="fb-root"></div>
+	<script>(function(d, s, id) {
+	  var js, fjs = d.getElementsByTagName(s)[0];
+	  if (d.getElementById(id)) return;
+	  js = d.createElement(s); js.id = id;
+	  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=233920043466562";
+	  fjs.parentNode.insertBefore(js, fjs);
+	}(document, 'script', 'facebook-jssdk'));</script>
+  
+  
+  <div id="fb-root"></div>
+    <script>
+    
+    window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '233920043466562',
+      status     : true, // check login status
+      cookie     : true, // enable cookies to allow the server to access the session
+      xfbml      : true  // parse XFBML
+    });
+    
+    
+    // Here we subscribe to the auth.authResponseChange JavaScript event. This event is fired
+    // for any authentication related change, such as login, logout or session refresh. This means that
+    // whenever someone who was previously logged out tries to log in again, the correct case below 
+    // will be handled. 
+    FB.Event.subscribe('auth.authResponseChange', function(response) {
+      // Here we specify what we do with the response anytime this event occurs. 
+      if (response.status === 'connected') {
+        // The response object is returned with a status field that lets the app know the current
+        // login status of the person. In this case, we're handling the situation where they 
+        // have logged in to the app.
+        testAPI();
+      } else if (response.status === 'not_authorized') {
+        // In this case, the person is logged into Facebook, but not into the app, so we call
+        // FB.login() to prompt them to do so. 
+        // In real-life usage, you wouldn't want to immediately prompt someone to login 
+        // like this, for two reasons:
+        // (1) JavaScript created popup windows are blocked by most browsers unless they 
+        // result from direct interaction from people using the app (such as a mouse click)
+        // (2) it is a bad experience to be continually prompted to login upon page load.
+        FB.login();
+      } else {
+        // In this case, the person is not logged into Facebook, so we call the login() 
+        // function to prompt them to do so. Note that at this stage there is no indication
+        // of whether they are logged into the app. If they aren't then they'll see the Login
+        // dialog right after they log in to Facebook. 
+        // The same caveats as above apply to the FB.login() call here.
+        FB.login();
+      }
+    });
+    
+    
+    
+    };
+
+    // Load the SDK asynchronously
+    (function(d){
+     var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement('script'); js.id = id; js.async = true;
+     js.src = "//connect.facebook.net/en_US/all.js";
+     ref.parentNode.insertBefore(js, ref);
+    }(document));
+
+    // Here we run a very simple test of the Graph API after login is successful. 
+    // This testAPI() function is only called in those cases. 
+    function testAPI() {
+      console.log('Welcome!  Fetching your information.... ');
+      FB.api('/me', function(response) {
+        console.log('Good to see you, ' + response.name + '.');
+      });
+    }
+  </script>
+
+  <!--
+    Below we include the Login Button social plugin. This button uses the JavaScript SDK to
+    present a graphical Login button that triggers the FB.login() function when clicked. -->
+
+  
+   
+    </script>
+  
+  
+  
+  
+  
+  <br/><br/>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#page-top">Mastermind Coding Game</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse navbar-ex1-collapse">
+                <ul class="nav navbar-nav">
+                    <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
+                    <li class="hidden">
+                        <a href="/#page-top"></a>
+                    </li>                    
+                    <li class="page-scroll">
+                        <a href="/#play">Play Now!</a>
+                    </li>
+                     <li class="page-scroll">
+                        <a href="/#new_bot">Add New Bot</a>
+                    </li>
+                     
+                    <li class="page-scroll">
+                        <a href="/#score_board">Bots Scoring Board</a>
+                    </li>    
+                    
+                    <li class="page-scroll">
+                        <a href="#challenge">The Challenge</a>
+                    </li>                
+                                      
+                    <li>
+                    
+                   
+                    
+                    
+                    <script>
+                    
+                    
+                    
+                    var chatRef = new Firebase('https://junkiatyeo.firebaseio.com');
+                    var auth = new FirebaseSimpleLogin(chatRef, function(error, user) {
+                      if (error) {
+                        // an error occurred while attempting login
+                        
+                         switch(error.code) {
+						      case 'INVALID_EMAIL': alert("Invalid Email!");
+						      case 'INVALID_PASSWORD': alert("Invalid Password!");
+						      default:
+						    }
+                        
+                        console.log(error);
+                      } else if (user) {
+                        // user authenticated with Firebase
+                        console.log('User ID: ' + user.id + ', Provider: ' + user.provider);
+                      } else {
+                        // user is logged out
+                      }
+                    
+                     
+                      
+                    });
+                    
+                 
+                  
+                    </script>
+                  
+                    
+                    
+					
+			            <a href="" class="dropdown-toggle" data-toggle="dropdown">Log in/Log out <b class="caret"></b></a>
+			            <ul class="dropdown-menu">
+			              <li><a href="javascript:void(0);" onclick="auth.login('facebook')"><img src="Image/fb.png" width="50%" height="50%"/></a></li>
+			             <li><a href="javascript:void(0);" onclick="auth.login('google');"><img src="Image/gp.png"  width="50%" height="50%"/></a>
+			             </li>
+			             <li><a href="javascript:void(0);" onclick="auth.logout()">Log out</a>
+			             </li>
+			            </ul>
+			               
+                    
+                    </li>
+                     
+                    <li>
+                    <script src="http://connect.facebook.net/en_US/all.js#xfbml=1&appId=233920043466562"></script><script type="text/javascript">_ga.trackFacebook();</script>
+   <div class="fb-like" data-href="http://icyyxer.appspot.com/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+
+                    
+                    </li>  
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    
+	
+	
+
+
+
+
+
+	<section id="challenge" class="challenge-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1>The Challenge</h1>                    
+                                                  
+                               
+                    Choose THE BOT and get the bot to challenge other bots! <br/>
+                    
+                    <script>
+                    var botOneCodeRun = false;
+                    var dataRef = new Firebase('https://junkiatyeo.firebaseio.com/botList/');
+                    dataRef.on('child_added', function(snapshot) {
+                    	var name = snapshot.name(), codes = snapshot.val().code;
+                    	//codes = JSON.parse(codes);
+                      	//alert('VALUE IS ' + name + " CODES " + codes);
+                      	
+                      	option = document.createElement('option');
+                      	option.value = name;
+                      	option.text = name;
+                      	botONE.appendChild(option);
+                      	
+                      	if(!botOneCodeRun){                      	
+                      		document.getElementById("myTextarea1").value=codes;                      			
+                      		botOneCodeRun = true;
+                      	}                      	
+                      	
+                    });
+                    
+                    dataRef.on('child_added', function(snapshot) {
+                    	var name = snapshot.name(), codes = snapshot.val().code;
+                    	//codes = JSON.parse(codes);
+                      	//alert('VALUE IS ' + name + " CODES " + codes);                      	
+                      	                      	
+                      	option = document.createElement('option');
+                      	option.value = name;
+                      	option.text = name;                      	
+                      	botTWO.appendChild(option);
+                      	option.setAttribute("selected","selected");
+                      	document.getElementById("myTextarea2").value=codes;
+                    });
+                    
+                   
+                    function botOneChange(){
+                    	//alert("HELLO");
+                    	var selectedBot = document.getElementById("botONE").value;
+                    	var url = "https://junkiatyeo.firebaseio.com/botList/"+selectedBot;
+                    	//alert(url);
+                    	var dataRef = new Firebase(url);
+                    	//alert(dataRef);
+                    	dataRef.on('value', function(snapshot) {
+                    	 // alert("HELLO");
+                    	  var codes = snapshot.val().code;
+                    	  //codes = JSON.parse(codes);
+                    	  //alert(codes);
+                    	  document.getElementById("myTextarea1").value=codes;             	   
+                    	  
+                    	});             	
+                    	
+                    	document.getElementById("botONE").disabled=true;
+                    	
+                    }
+                    
+                    function botTwoChange(){
+                    	//alert("HELLO");
+                    	var selectedBot = document.getElementById("botTWO").value;
+                    	var url = "https://junkiatyeo.firebaseio.com/botList/"+selectedBot;
+                    	//alert(url);
+                    	var dataRef = new Firebase(url);
+                    	//alert(dataRef);
+                    	dataRef.on('value', function(snapshot) {
+                    	 // alert("HELLO");
+                    	  var codes = snapshot.val().code;
+                    	  //codes = JSON.parse(codes);
+                    	  //alert(codes);
+                    	  document.getElementById("myTextarea2").value=codes;
+                    	});             	
+                    	
+                    	
+                    }                    
+                    
+                  
+                    
+                    </script>
+                    
+                   
+                    
+                    
+                    <br/>
+                    <br/>
+                    
+                    <table align="center">
+						<tr><td rowspan=3 >						
+						<input type="submit" value="Step 1: Bot 1 Play" onclick="showHelp(1)">
+						<input type="submit" value="Step 2: Bot 2 Play" onclick="showHelp(2)">						
+						<input type="submit" value="Step 3: Game Result" onclick="showRes()">
+						<input type="submit" value="Step 4: Reset Game" onclick="newGame()">
+						<table>
+						
+						<tr><td><br/><br/></td></tr>
+						
+					  <tr>
+					    <td>   
+					    
+					    
+					    
+					      Choose a bot: <select name="botONE" id="botONE" onchange="botOneChange()"></select>
+					    </td>
+						    <td>
+					      Levels: <select name="botTWO" id="botTWO" onchange="botTwoChange()"></select>    
+					    </td>
+					  </tr>
+					  <tr>
+					    <td>
+					      <textarea id = 'myTextarea1' name="myTextarea1" rows="8" cols="40" style="margin: 0px; width: 360px; height: 191px;" disabled>
+</textarea>
+					    </td> 
+						    <td>
+					      <textarea id = 'myTextarea2' name="myTextarea2" rows="8" cols="40" style="margin: 0px; width: 360px; height: 191px;" disabled>
+</textarea>
+					    </td> 
+					  </tr>
+					</table>
+					
+						    <table border=1 cellspacing=0 cellpadding=4 margin=0>
+							<tr><td id='messageTd'>&nbsp;</td></tr><tr><td>
+							    <table id='boardTable' border=0 >
+							        <!-- tr with "Guess" button will be added here. -->
+								<tr id='blackLineTr'>
+								  <td colspan=8 align="center">
+                    <img src="Image/blackpixel.gif" id="blackHorizontalTd"
+									 width = "100%" height=3 border=0>
+								  </td>
+								</tr><tr>
+								  <script Language=JavaScript>
+								    document.write( getButtonArrayHTML() );
+								  </script>
+								</tr>  
+							    </table>
+							  </td></tr>
+						    </table>
+							
+					
+					    </table>
+                    
+                    
+                    
+                    
+                    
+				</div>
+            </div>
+        </div>
+    </section>
+
+
+
+
+   
+    
+   
+    
+    
+    
+
+    <!-- Core JavaScript Files -->
+    <script src="js/jquery-1.10.2.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery.easing.min.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="js/scrolling-nav.js"></script>
+
+</body>
+
+</html>

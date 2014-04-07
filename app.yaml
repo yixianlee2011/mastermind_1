@@ -6,7 +6,7 @@
 # TODO: Enter your application id below. If you have signed up
 # using cloud.google.com/console use the "project id" for your application
 # id.
-application: tictactoeyixian2011
+application: icyyxer
 version: 1
 runtime: python27
 api_version: 1
@@ -40,6 +40,10 @@ handlers:
 - url: /
   static_files: public/mastermind.html
   upload: public/mastermind.html
+  
+- url: /the_challenge.html
+  static_files: public/the_challenge.html
+  upload: public/the_challenge.html
   
 - url: /api/.*
   script: main.bottle
