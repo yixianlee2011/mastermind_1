@@ -93,9 +93,11 @@ def use_verify_service():
   tests = request.params.get('tests')
   result = verify(problem, tests, url)
   return result 
-
+'''
 @bottle.route('/api/get_bots')
 def use_verify_service():
+  return "I return this"
+  '''
   bots = Bot.query().fetch(100)
   result = []
   for bot in bots:
