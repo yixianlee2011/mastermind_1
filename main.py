@@ -61,7 +61,7 @@ def verify_service(requestJSON, url):
 
 # Run the Bottle wsgi application. We don't need to call run() since our
 # application is embedded within an App Engine WSGI application server.
-bottle = Bottle()
+bottle = Bottle(
 '''
 @bottle.route('/api/currentplayer')
 def currentplayer():
