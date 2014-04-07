@@ -96,7 +96,7 @@ def use_verify_service():
 '''
 @bottle.route('/api/get_bots')
 def use_verify_service():
-  return "I return this";
+  return "I return this"
   '''
   bots = Bot.query().fetch(100)
   result = []
@@ -111,7 +111,7 @@ def error_404(error):
 
 @bottle.post('/api/verify_service_m')
 def verify_service_m():
-  bots_code_m = request.forms.get("bots_code")
+  bots_code_m = request.forms.get("bots_code"
   #syntax testing
   bots_code_m+="function aguess(a,b,c,d){ return [1,1] }";
   tests_m = request.forms.get("tests");
