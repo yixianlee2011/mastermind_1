@@ -371,7 +371,7 @@
                     
                     <br/>
                     *Only JAVASCRIPT is supported for now. (:<br/>
-                    *This is only VERSION 2.0. Look forward for an updated version in a few days time!
+                    *This is only VERSION 3.0. Look forward for an updated version in a few days time!
                     
                     
                     </p>
@@ -660,6 +660,7 @@
                 				var newGame_played = Number(0);
                 				var newGame_won = Number(0);
                 				var newGame_lost = Number(0);
+								var newScore = Number(1300);
                 				
                 				if (name.length === 0)
                 					return;
@@ -667,7 +668,7 @@
                 				var botGameRef = myBotRef.child(name);
                 				
                 				// Use setWithPriority in Firebase, and set the priority to be the game_played.
-                				botGameRef.setWithPriority({ name:name, game_played:newGame_played, game_won:newGame_won, game_lost:newGame_lost, code:newCode }, newGame_played);
+                				botGameRef.setWithPriority({ name:name, game_played:newGame_played, game_won:newGame_won, game_lost:newGame_lost, code:newCode, score:newScore }, newGame_played);
                 			}
                 		});
                 	});
@@ -730,13 +731,9 @@
 					<div style="height:30px;"></div>
                 </div>
             </div>
-        </div>
-        
-       
+        </div> 
         
     </section>
-
-
 
     <section id="score_board" class="score-section">
         <div class="container">
@@ -777,21 +774,11 @@
 					
 					<br/><br/>
 					
-					<!--
-						The following input text field shall be subsequently replaced with user login id, and the score.
-						The score is will be calculated using the Chess Elo Rating, 
-						(Assuming the machine's Elo rating is 1000, which is slightly higher than a beginner's rating at 800)
-						Score = [(Total ratings for all opponents)+400*(#Wins-#Losses)]/Games
-					-->
-					
-					
-					
-					
 					<script>
 					  var LEADERBOARD_SIZE = 10;
 					
 					  // Create our Firebase reference
-					  var scoreListRef = new Firebase('https://junkiatyeo.firebaseio.com/scoreList');
+					  var scoreListRef = new Firebase('https://junkiatyeo.firebaseio.com/botList');
 					
 					  // Keep a mapping of firebase locations to HTML elements, so we can move / remove elements as necessary.
 					  var htmlForPath = {};
@@ -823,7 +810,7 @@
 					  }
 					
 					  // Create a view to only receive callbacks for the last LEADERBOARD_SIZE scores
-					  var scoreListView = scoreListRef.limit(LEADERBOARD_SIZE);
+					  var scoreListView = myBotRef.limit(LEADERBOARD_SIZE);
 					
 					  // Add a callback to handle when a new score is added.
 					  scoreListView.on('child_added', function (newScoreSnapshot, prevScoreName) {
@@ -853,7 +840,7 @@
 					      if (name.length === 0)
 					        return;
 					
-					      var userScoreRef = scoreListRef.child(name);
+					      var userScoreRef = myBotRef.child(name);
 					      
 					      // Use setWithPriority to put the name / score in Firebase, and set the priority to be the score.
 					      userScoreRef.setWithPriority({ name:name, score:newScore }, newScore);
@@ -875,9 +862,6 @@
     </p>
     </section>
     
-    
-    
-
     <!-- Core JavaScript Files -->
     <script src="js/jquery-1.10.2.js"></script>
     <script src="js/bootstrap.min.js"></script>

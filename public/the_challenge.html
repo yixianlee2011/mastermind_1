@@ -17,7 +17,7 @@
 
 
 	
-  <script language='JavaScript' src='js/mastermind.js'></script>
+	<script language='JavaScript' src='js/mastermind.js'></script>
 	
 	
 	<!-- Logging in -->
@@ -25,7 +25,7 @@
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.7/angular.min.js"></script>
 	 <script src="//cdn.firebase.com/js/client/1.0.6/firebase.js"></script>
 	 <script src="//cdn.firebase.com/libs/angularfire/0.7.1/angularfire.min.js"></script>
-	 <script src="app.js"></script>
+
 	 
     <!-- Enable google analytics -->
     <script>
@@ -85,7 +85,7 @@
 			var bc = $('#botCode').val();
 
 			$.ajax({
-        /*  type: "POST",
+			      type: "POST",
 			      url: "service_servlet",
 			      data: { "tests" : t, "bots_code" : bc  },
 				  success : function(data){
@@ -99,8 +99,8 @@
 			              }else{
 			            	  alert("Error, Please look at the error message below.\n< Note!, any changes to the code will clear the message. >");
 			              }
-	          	}			    
-      });*/
+	          	}			       
+			  });
 		});	
 		
 	});
@@ -332,40 +332,123 @@
                     <h1>The Challenge</h1>                    
                                                   
                                
-                    Choose THE BOT and get the bot to challenge other bots! <br/>
+                   *Choose THE BOT and get the bot to challenge other bots! <br/>
+                   
+                    <h4>What to do?</h4>
+                    
+                    
+					*Choose a bot via the drop down <br/>
+					*Click step 1 to step 4 button for all top 10 bots! <br/> 
                     
                     <script>
+                    
+                    
                     var botOneCodeRun = false;
                     var dataRef = new Firebase('https://junkiatyeo.firebaseio.com/botList/');
                     dataRef.on('child_added', function(snapshot) {
                     	var name = snapshot.name(), codes = snapshot.val().code;
                     	//codes = JSON.parse(codes);
                       	//alert('VALUE IS ' + name + " CODES " + codes);
-                      	
+                      
                       	option = document.createElement('option');
                       	option.value = name;
                       	option.text = name;
                       	botONE.appendChild(option);
                       	
                       	if(!botOneCodeRun){                      	
-                      		document.getElementById("myTextarea1").value=codes;                      			
+                      		document.getElementById("myTextarea1").value="Please select a bot before playing. Once you have selected the bot, you can only change it after clicking 'Restart'.";                      			
                       		botOneCodeRun = true;
                       	}                      	
                       	
                     });
                     
+                   
                     dataRef.on('child_added', function(snapshot) {
-                    	var name = snapshot.name(), codes = snapshot.val().code;
+                    	var name = snapshot.name(), codes = snapshot.val().code, score = snapshot.val().score;
                     	//codes = JSON.parse(codes);
                       	//alert('VALUE IS ' + name + " CODES " + codes);                      	
-                      	                      	
+						//alert(name);
+                      	//score(name);
+                      	//alert(score);
+                      	
                       	option = document.createElement('option');
-                      	option.value = name;
+                      	option.value = score;
                       	option.text = name;                      	
                       	botTWO.appendChild(option);
                       	option.setAttribute("selected","selected");
-                      	document.getElementById("myTextarea2").value=codes;
+                      	document.getElementById("myTextarea2").value=codes;      
+                      	
+                      	sortSelect('botTWO', 'value');
+                      	
+   	
                     });
+                    
+                   
+                    var levelNo = 1;
+                    
+                    function sortSelect(selElem, sortVal) {
+
+                        // Checks for an object or string. Uses string as ID. 
+                        switch(typeof selElem) {
+                            case "string":
+                                selElem = document.getElementById(selElem);
+                                break;
+                            case "object":
+                                if(selElem==null) return false;
+                                break;
+                            default:
+                                return false;
+                        }
+
+                        // Builds the options list.
+                        var tmpAry = new Array();
+                        for (var i=0;i<selElem.options.length;i++) {
+                            tmpAry[i] = new Array();
+                            tmpAry[i][0] = selElem.options[i].text;
+                            tmpAry[i][1] = selElem.options[i].value;
+                        }
+
+                        // allows sortVal to be optional, defaults to text.
+                        switch(sortVal) {
+                            case "value": // sort by value
+                                sortVal = 1;
+                                break;
+                            default: // sort by text
+                                sortVal = 0;
+                        }
+                        tmpAry.sort(function(a, b) {
+                            return a[sortVal] == b[sortVal] ? 0 : a[sortVal] < b[sortVal] ? -1 : 1;
+                        });
+
+                        // removes all options from the select.
+                        while (selElem.options.length > 0) {
+                            selElem.options[0] = null;
+                        }
+
+                        // recreates all options with the new order.
+                        for (var i=0;i<tmpAry.length;i++) {
+                        	
+                        	if(tmpAry[i][0].indexOf(": ") != -1){
+                        		tmpAry[i][0] =  tmpAry[i][0].substring(3);
+                        	}                       	
+                        	
+                        	tmpAry[i][0] =  levelNo+": "+tmpAry[i][0];
+                            var op = new Option(tmpAry[i][0], tmpAry[i][1]);
+                            selElem.options[i] = op;
+                            
+                            levelNo = levelNo + 1;
+                            
+                            if(levelNo > 10){
+                            	break;
+                            }
+                        }
+
+                        levelNo = 1;
+                        return true;
+                    }
+                    
+                    
+                    
                     
                    
                     function botOneChange(){
@@ -384,13 +467,25 @@
                     	  
                     	});             	
                     	
-                    	document.getElementById("botONE").disabled=true;
+                    	
+                    	if(selectedBot != "-"){
+                    		document.getElementById("botONE").disabled=true;
+                    		step1.disabled = false; 
+                    		step2.disabled = false;
+                    		step3.disabled = false;
+                    		step4.disabled = false;
+                    	}
+                    	
+                    	
                     	
                     }
                     
                     function botTwoChange(){
                     	//alert("HELLO");
-                    	var selectedBot = document.getElementById("botTWO").value;
+                    	var selectedBotObj = document.getElementById("botTWO");                    	
+                    	var selectedBot = selectedBotObj.options[selectedBotObj.selectedIndex].innerHTML;
+                    	selectedBot = selectedBot.substring(3);
+                    	
                     	var url = "https://junkiatyeo.firebaseio.com/botList/"+selectedBot;
                     	//alert(url);
                     	var dataRef = new Firebase(url);
@@ -404,11 +499,52 @@
                     	});             	
                     	
                     	
-                    }                    
+                    }
                     
+                   
+
+                    function nextBot(){
+                    	
+                    	//alert("HELLO");
+                    	var selectedBotObj = document.getElementById("botTWO");                    	
+                    	var selectedBot = selectedBotObj.options[selectedBotObj.selectedIndex].innerHTML;
+                    	selectedBot = selectedBot.substring(3);
+                    	
+                    	var index = selectedBotObj.selectedIndex;
+                    	var url = "https://junkiatyeo.firebaseio.com/botList/"+selectedBot;
+                    	//alert(url);
+                    	var dataRef = new Firebase(url);
+                    	//alert(dataRef);
+                    	dataRef.on('value', function(snapshot) {
+                    	 // alert("HELLO");
+                    	  var codes = snapshot.val().code;
+                    	  //codes = JSON.parse(codes);
+                    	  //alert(codes);
+                    	  document.getElementById("myTextarea2").value=codes;
+                    	});             	
+                    	
+                    	var nextIndex = index+1;
+                    	
+                    	if(nextIndex<10){   
+                    		
+                    		botTWO.options[nextIndex].selected = true;
+                    	}
+                    }
                   
                     
-                    </script>
+                    function restart(){
+                    	step1.disabled = true; 
+                		step2.disabled = true;
+                		step3.disabled = true;
+                		step4.disabled = true;
+                		document.getElementById("botONE").disabled=false;
+                		botTWO.options[0].selected = true;
+                		botONE.options[0].selected = true;
+                		document.getElementById("myTextarea1").value="Please select a bot before playing. Once you have selected the bot, you can only change it after clicking 'Restart'.";               
+                		
+                    }
+                    
+                  </script>
                     
                    
                     
@@ -418,23 +554,31 @@
                     
                     <table align="center">
 						<tr><td rowspan=3 >						
-						<input type="submit" value="Step 1: Bot 1 Play" onclick="showHelp(1)">
-						<input type="submit" value="Step 2: Bot 2 Play" onclick="showHelp(2)">						
-						<input type="submit" value="Step 3: Game Result" onclick="showRes()">
-						<input type="submit" value="Step 4: Reset Game" onclick="newGame()">
-						<table>
+						<input type="submit" id = "step1" value="Step 1: Bot 1 Play" onclick="showHelp(1)" disabled>
+						<input type="submit" id = "step2" value="Step 2: Bot 2 Play" onclick="showHelp(2)" disabled>						
+						<input type="submit" id = "step3" value="Step 3: Game Result" onclick="showRes()" disabled>
+						<input type="submit" id = "step4" value="Step 4: Next Game" onclick="nextBot();newGame()" disabled>
+					
+					<table>
 						
 						<tr><td><br/><br/></td></tr>
 						
 					  <tr>
 					    <td>   
+					    					    
 					    
-					    
-					    
-					      Choose a bot: <select name="botONE" id="botONE" onchange="botOneChange()"></select>
+					      (Bot 1) Choose a bot: <select name="botONE" id="botONE" onchange="botOneChange()">
+					      <option value="-">-</option>
+					      
+					      
+					      </select>
+					      
+					      
+					      <input type="submit" id = "restart" value="Restart" onclick="restart()">
 					    </td>
 						    <td>
-					      Levels: <select name="botTWO" id="botTWO" onchange="botTwoChange()"></select>    
+					      (Bot 2) Level <select name="botTWO" id="botTWO" onchange="botTwoChange()"></select>					  
+					          
 					    </td>
 					  </tr>
 					  <tr>
@@ -449,13 +593,14 @@
 					  </tr>
 					</table>
 					
+					
 						    <table border=1 cellspacing=0 cellpadding=4 margin=0>
 							<tr><td id='messageTd'>&nbsp;</td></tr><tr><td>
 							    <table id='boardTable' border=0 >
 							        <!-- tr with "Guess" button will be added here. -->
 								<tr id='blackLineTr'>
 								  <td colspan=8 align="center">
-                    <img src="Image/blackpixel.gif" id="blackHorizontalTd"
+								    <img src="Image/blackpixel.gif" id="blackHorizontalTd"
 									 width = "100%" height=3 border=0>
 								  </td>
 								</tr><tr>

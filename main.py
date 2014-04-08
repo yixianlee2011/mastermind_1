@@ -48,7 +48,6 @@ def error_404(error):
 @bottle.post('/api/verify_service_m')
 def verify_service_m():
   bots_code_m = request.forms.get("bots_code")
-  io.
   #syntax testing
   bots_code_m+="function aguess(a,b,c,d){ return [1,1] }";
   tests_m = request.forms.get("tests");
