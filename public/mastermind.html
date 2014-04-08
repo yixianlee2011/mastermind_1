@@ -86,7 +86,7 @@
 
 			$.ajax({
 			      type: "POST",
-			      url: "service_servlet",
+			      url: "/api/verify_service_m",
 			      data: { "tests" : t, "bots_code" : bc  },
 				  success : function(data){
 			              $('#result').html(data);
