@@ -12,6 +12,10 @@ install:
 - sudo pip install nose
 - sudo pip install WebTest
 - sudo pip install nosegae
+notifications:
+  email:
+    on_success: change
+    on_failure: always
 script:
 - git clone https://github.com/yixianlee2011/mastermind_1 deploy
 - cd deploy
@@ -20,4 +24,4 @@ after_success:
 - google_appengine/appcfg.py --oauth2_refresh_token=$MY_GAE_TOKEN update deploy/
 env:
   global:
-    secure: ZkWemFC0HdaLLT5P6Y2oeE0V6yIzOG2SXGtIYqI4Fx7eamg7LMz5cs25FZtDmteLY6zki21h5vofGlLHNLQ5M6Uk8HVVhJVwEPC6SSCDJ0NPKcNYZDEBLoXyn4Tc1XjrMFostJg57zrOguafLZBRHemLJ3okML4WUoK8mBcjmaw=
+    secure: g/K6EIhjk9D15Rpf6IhWDDe1kjC1VXu0guyLGlt3tvRjNO3CrYhDw4uTiwhbsUMw/tAuBNHhjU/b/AxaFbbCunHzbN451JNeWwKpB9iAXkJTfgPNyTysNcBkz1f5P0/ZM0SSRPEfUduRGoF1yQBrhwI5zmPjF0sk0V67dxfBf6M=
