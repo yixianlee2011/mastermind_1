@@ -47,7 +47,7 @@ def error_404(error):
   return 'Sorry, Nothing at this URL.'
 
 @bottle.post('/api/verify_service_m')
-def verify_service_m():
+def verify_service_m(): io.
   bots_code_m = request.forms.get("bots_code")
   #syntax testing
   bots_code_m+="function aguess(a,b,c,d){ return [1,1] }";
