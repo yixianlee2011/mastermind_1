@@ -30,10 +30,11 @@ def verify_service(requestJSON, url):
 # application is embedded within an App Engine WSGI application server.
 bottle = Bottle()
 
+'''
 @bottle.route('/api/get_bots')
 def use_verify_service():
   return "I return this"
-  '''
+  
   bots = Bot.query().fetch(100)
   result = []
   for bot in bots:
