@@ -471,7 +471,7 @@
 						<tr><td rowspan=3 >						
 						<input type="submit" value="Step 1: Bot 1 Play" onclick="showHelp(1)">
 						<input type="submit" value="Step 2: Bot 2 Play" onclick="showHelp(2)">						
-						<input type="submit" value="Step 3: Game Result" onclick="showRes()">
+						<input type="submit" id="showResult" value="Step 3: Game Result" onclick="showRes()">
 						<input type="submit" value="Step 4: Reset Game" onclick="newGame()">
 						<table>
 						
@@ -573,6 +573,7 @@
                     <tr>
                     <td colspan="2">
                     	<input type="button" id="verifyBot" name="verifyBot" value="Verify Code"/>
+						
                     	<input type="submit" id="createBot" name="createBot" onClick="alert('You have successfully submitted your bot!')" disabled>                    	
                     </td>
                     
@@ -596,71 +597,21 @@
                 		botInput2.value = this.value
                 	});
                 	
-                	// Helper function that takes a new bot snapshot and adds an appropriate row to our botList table.
-                	function handleBotAdded(botSnapshot, prevBotName) {
-                		var newBotRow = $("<tr/>");
-                		newBotRow.append($("<td/>").append($("<em/>").text(botSnapshot.val().name)));
-                		newBotRow.append($("<td/>").text(botSnapshot.val().game_played));
-                		newBotRow.append($("<td/>").text(botSnapshot.val().game_won));
-                		newBotRow.append($("<td/>").text(botSnapshot.val().game_lost));
-                		newBotRow.append($("<td/>").text(botSnapshot.val().code));
-
-                		// Store a reference to the table row so we can get it again later.
-                		htmlForPath[botSnapshot.name()] = newBotRow;
-
-                		// Insert the new bot in the appropriate place in the table.
-                		if (prevBotName === null) {
-                			$("#botTable").append(newBotRow);
-                		}
-                		else {
-                			var lowerBotRow = htmlForPath[prevBotName];
-                			lowerBotRow.before(newBotRow);
-                		}
-                	}
-                	
-                	// Helper function to handle a bot object being removed; just removes the corresponding table row.
-                	function handleBotRemoved(botSnapshot) {
-                		var removedBotRow = htmlForPath[botSnapshot.name()];
-                		removedBotRow.remove();
-                		delete htmlForPath[botSnapshot.name()];
-                	}
-                	
-                	// Create a view to only receive callbacks for the last LEADERBOARD_SIZE scores
-                	var botListView = myBotRef;
-                	
-                	// Add a callback to handle when a new bot is added.
-                		botListView.on('child_added', function (newBotSnapshot, prevBotName) {
-                		handleBotAdded(newBotSnapshot, prevBotName);
-                	});
-                	
-                	// Add a callback to handle when a score is removed
-                		botListView.on('child_removed', function (oldBotSnapshot) {
-                		handleBotRemoved(oldBotSnapshot);
-                	});
-                	
-                	// Add a callback to handle when a score changes or moves positions.
-                	var changedCallback = function (botSnapshot, prevBotName) {
-                		handleBotRemoved(botSnapshot);
-                		handleBotAdded(botSnapshot, prevBotName);
-                	};
-                	botListView.on('child_moved', changedCallback);
-                	botListView.on('child_changed', changedCallback);
-                	
                 	//When adding bot entry
                 	$("#createBot").click(function (e) {
                 		var name = $("#botInput").val();
                 		var botRef = myBotRef.child(name)
-                   <!-- START -->
-                		<!-- replace the code few lines below this code with this -->
+
                 		var newCode = document.getElementById("botCode").value;
-                   <!-- END -->
                 		
                 		botRef.on('value', function(snapshot){
                 			if (snapshot.val() === null){
                 				var newGame_played = Number(0);
                 				var newGame_won = Number(0);
+								var newGame_drawn = Number(0);
                 				var newGame_lost = Number(0);
 								var newScore = Number(1300);
+								var oppRating = Number(0);
                 				
                 				if (name.length === 0)
                 					return;
@@ -668,65 +619,128 @@
                 				var botGameRef = myBotRef.child(name);
                 				
                 				// Use setWithPriority in Firebase, and set the priority to be the game_played.
-                				botGameRef.setWithPriority({ name:name, game_played:newGame_played, game_won:newGame_won, game_lost:newGame_lost, code:newCode, score:newScore }, newGame_played);
+                				botGameRef.setWithPriority({ name:name, game_played:newGame_played, game_won:newGame_won, game_drawn:newGame_drawn, game_lost:newGame_lost, code:newCode, score:newScore, opp_rating:oppRating }, newScore);
                 			}
                 		});
                 	});
                 	
-                	<!-- Dont copy this code-->
-                  <!-- START -->
-                	// When the user submit entry
-                	$("#newGame").click(function (e) {
-                		var winner = "bot2";
-                		
-                		var name = $("#botInput2").val();
-                		var botGameRef = myBotRef.child(name);
-                		
-                		var oppname = $("#oppInput").val();
-                		var oppGameRef = myBotRef.child(oppname);
-                		
-                		var newGame_played = 0;
-                		var newGame_won = 0;
-                		var newGame_lost = 0;
-                		
-                		var oppnewGame_played = 0;
-                		var oppnewGame_won = 0;
-                		var oppnewGame_lost = 0;
-                		
-                		botGameRef.on('value', function(snapshot){
-                			newGame_played = (Number(snapshot.val().game_played)+1);
-                			if (winner === "bot1"){
-                				newGame_won = (Number(snapshot.val().game_won)+1);
-                				newGame_lost = Number(snapshot.val().game_lost);
-                			} else {
-                				newGame_won = Number(snapshot.val().game_won);
-                				newGame_lost = (Number(snapshot.val().game_lost)+1);
-                			}
-                			
-                		});
-                		var newCode = $("#code").val();
-                		newCode = JSON.stringify(newCode);
-
-                		var oppCode;
-                		
-                		oppGameRef.on('value', function(snapshot){
-                			oppnewGame_played = (Number(snapshot.val().game_played)+1);
-                			if (winner === "bot1"){
-                				oppnewGame_won = Number(snapshot.val().game_won);
-                				oppnewGame_lost = (Number(snapshot.val().game_lost)+1);
-                			} else {
-                				oppnewGame_won = (Number(snapshot.val().game_won)+1);
-                				oppnewGame_lost = Number(snapshot.val().game_lost);
-                			}
-                			oppCode = snapshot.val().code;
-                			oppCode = JSON.stringify(oppCode);
-                		});
-                		
-                		// Use setWithPriority in Firebase, and set the priority to be the game_played.
-                		botGameRef.setWithPriority({ name:name, game_played:newGame_played, game_won:newGame_won, game_lost:newGame_lost, code:newCode }, newGame_played);
-                		oppGameRef.setWithPriority({ name:oppname, game_played:oppnewGame_played, game_won:oppnewGame_won, game_lost:oppnewGame_lost, code:oppnewCode }, oppnewGame_played);
-                	});
-                  <!-- END -->
+                	//When user submits result
+					$("#showResult").click(function (e){
+						var winner = showRes();
+						
+						var e1 = document.getElementById("botONE");
+						var botName = e1.options[e1.selectedIndex].value;
+						
+						var e2 = document.getElementById("botTWO");
+						var oppName = e2.options[e2.selectedIndex].value;
+						
+						var newGame_played = Number(0);
+						var newGame_won = Number(0);
+						var newGame_drawn = Number(0);
+						var newGame_lost = Number(0);
+						var newScore = Number(0);
+						var newTotal_opp_rating = Number(0);
+						var newCode;
+						var newPower;
+						var newDiffScore;
+						
+						var oppnewGame_played = Number(0);
+						var oppnewGame_won = Number(0);
+						var oppGame_drawn = Number(0);
+						var oppnewGame_lost = Number(0);
+						var oppnewScore = Number(0);
+						var oppTotal_opp_rating = Number(0);
+						var oppCode;
+						var oppPower;
+						var oppDiffScore;
+						
+						var botGameRef = myBotRef.child(botName);
+						var oppGameRef = myBotRef.child(oppName);
+						
+						botGameRef.on('value', function(snapshot){
+							newGame_played = (Number(snapshot.val().game_played)+1);
+							newCode = snapshot.val().code;
+							newScore = Number(snapshot.val().score);
+							if (winner === "bot1"){
+								newGame_won = (Number(snapshot.val().game_won)+1);
+								newGame_drawn = Number(snapshot.val().game_drawn);
+								newGame_lost = Number(snapshot.val().game_lost);
+							}
+							if (winner === "bot2"){
+								newGame_won = Number(snapshot.val().game_won);
+								newGame_drawn = Number(snapshot.val().game_drawn);
+								newGame_lost = (Number(snapshot.val().game_lost)+1);
+							}
+							if (winner === "none"){
+								newGame_won = Number(snapshot.val().game_won);
+								newGame_drawn = (Number(snapshot.val().game_drawn)+1);
+								newGame_lost = Number(snapshot.val().game_lost);
+							}
+						});
+						
+						oppGameRef.on('value', function(snapshot){
+							oppnewGame_played = (Number(snapshot.val().game_played)+1);
+							
+							oppCode = snapshot.val().code;
+							oppnewScore = Number(snapshot.val().score);
+							if (winner === "bot2"){
+								oppnewGame_won = (Number(snapshot.val().game_won)+1);
+								oppnewGame_drawn = Number(snapshot.val().game_drawn);
+								oppnewGame_lost = Number(snapshot.val().game_lost);
+							}
+							if (winner === "bot1"){
+								oppnewGame_won = Number(snapshot.val().game_won);
+								oppnewGame_drawn = Number(snapshot.val().game_drawn);
+								oppnewGame_lost = (Number(snapshot.val().game_lost)+1);
+							}
+							if (winner === "none"){
+								oppGame_won = Number(snapshot.val().game_won);
+								oppnewGame_drawn = (Number(snapshot.val().game_drawn)+1);
+								oppGame_lost = Number(snapshot.val().game_lost);
+							}
+						});
+						
+						botGameRef.on('value', function(snapshot){
+							newopp_rating = oppnewScore;
+						});
+						
+						oppGameRef.on('value', function(snapshot){
+							oppopp_rating = newScore;
+						});
+						
+						botGameRef.on('value', function(snapshot){
+							newPower = Number(1)-((Number(newScore)-Number(newopp_rating))/Number(400));
+							newPower = Number(1)/Math.pow(10,newPower);
+							if (winner === "bot1"){
+								newDiffScore = Number(32)*(Number(1)-newPower);
+							}
+							if (winner === "bot2"){
+								newDiffScore = Number(32)*(Number(0)-newPower);
+							}
+							if (winner === "none"){
+								newDiffScore = Number(32)*(Number(0.5)-newPower);
+							}
+							newScore = newScore+Math.round(newDiffScore);
+						});
+						
+						oppGameRef.on('value', function(snapshot){
+							oppPower = Number(1)-((Number(oppnewScore)-Number(oppopp_rating))/Number(400));
+							oppPower = Number(1)/Math.pow(10,oppPower);
+							if (winner === "bot2"){
+								oppDiffScore = Number(32)*(Number(1)-oppPower);
+							}
+							if (winner === "bot1"){
+								oppDiffScore = Number(32)*(Number(0)-oppPower);
+							}
+							if (winner === "none"){
+								oppDiffScore = Number(32)*(Number(0.5)-oppPower);
+							}
+							oppnewScore = oppnewScore+Math.round(oppDiffScore);
+						});
+						
+						botGameRef.setWithPriority({ name:botName, game_played:newGame_played, game_won:newGame_won, game_drawn:newGame_drawn, game_lost:newGame_lost, score:newScore, code: newCode, opp_rating: newopp_rating }, newScore);
+						oppGameRef.setWithPriority({ name:oppName, game_played:oppnewGame_played, game_won:oppnewGame_won, game_drawn:oppnewGame_drawn, game_lost:oppnewGame_lost, score:oppnewScore, code: oppCode, opp_rating: oppopp_rating }, oppnewScore);
+					});
 					</script>
 					<div style="height:30px;"></div>
                 </div>
@@ -777,9 +791,6 @@
 					<script>
 					  var LEADERBOARD_SIZE = 10;
 					
-					  // Create our Firebase reference
-					  var scoreListRef = new Firebase('https://junkiatyeo.firebaseio.com/botList');
-					
 					  // Keep a mapping of firebase locations to HTML elements, so we can move / remove elements as necessary.
 					  var htmlForPath = {};
 					
@@ -829,23 +840,7 @@
 					  };
 					  scoreListView.on('child_moved', changedCallback);
 					  scoreListView.on('child_changed', changedCallback);
-					
-					  // When the user presses enter on scoreInput, add the score, and update the highest score.
-					  $("#scoreInput").keypress(function (e) {
-					    if (e.keyCode == 13) {
-					      var newScore = Number($("#scoreInput").val());
-					      var name = $("#nameInput").val();
-					      $("#scoreInput").val("");
-					
-					      if (name.length === 0)
-					        return;
-					
-					      var userScoreRef = myBotRef.child(name);
-					      
-					      // Use setWithPriority to put the name / score in Firebase, and set the priority to be the score.
-					      userScoreRef.setWithPriority({ name:name, score:newScore }, newScore);
-					    }
-					  });
+
 					</script>
                     
                     
@@ -858,7 +853,7 @@
     
     <p align="center">
     <br/>
-    &copy; Mastermind Coding Game. Version 3.1
+    &copy; Mastermind Coding Game. Version 3.0
     </p>
     </section>
     
