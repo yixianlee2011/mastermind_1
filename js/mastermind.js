@@ -6,7 +6,7 @@ var curBot=0;
 var startTimeMillis;
 var timerIsRunning;
 var lastElapsedTime;
-var hiddenAnswer = [];     // what the user is trying to guess
+var hiddenAnswer = [1,2,3,4];       // what the user is trying to guess
 var guessTr = null;        // null => is no "Guess" row; game is not running.
 var lastGuess = [];        // what the user thinks is the answer.
 var oldGuesses = [];       // guessTr row history displayed on screen
@@ -19,6 +19,7 @@ colorImages  = ['Image/redball.gif',    'Image/blueball.gif',    'Image/brownbal
 // --------------------------------------------------------
 // called when user clicks "New Game".
 function newGame(){
+	ans();
     resetGame();
     gameNumber++;
     runTimer();
@@ -141,17 +142,21 @@ showMessage("");
     }
     
     //0-6
-    
-    hiddenAnswer[0] = 0;
-    hiddenAnswer[1] = 5;
-    hiddenAnswer[2] = 3;
-    hiddenAnswer[3] = 2;
-    
+        
     
     timerIsRunning = true;
     var d = new Date();
     startTimeMillis = d.getTime();
     createOrClearGuessTr();
+}
+
+function ans(){
+
+hiddenAnswer[0] = getRandom( 6 );
+hiddenAnswer[1] = getRandom( 6 );
+hiddenAnswer[2] = getRandom( 6 );
+hiddenAnswer[3] = getRandom( 6 );
+resetGame();
 }
 
 // --------------------------------------------------------
@@ -348,20 +353,21 @@ function pausecomp(millis)
 }
 
 function showRes(){
-
+	winner = "";
 	if (bot1score>bot2score){
-		reslut = "Bot2 win";
+		result = "Bot2 win";
+		winner = "bot2";
 	}
-		if (bot1score==bot2score){
-		reslut = "Draw";
+	if (bot1score==bot2score){
+		result = "Draw";
+		winner = "none"
 	}
-		if (bot1score<bot2score){
-		reslut = "Bot1 win";
+	if (bot1score<bot2score){
+		result = "Bot1 win";
+		winner = "bot1";
 	}
-	
-
- alert("Bot 1 steps " + bot1score + ", Bot 2 steps " + bot2score + ", " + reslut );
-
+	alert("Bot 1 steps " + bot1score + ", Bot 2 steps " + bot2score + ", " + result );
+	return winner;
 }
 
 function bot1(){

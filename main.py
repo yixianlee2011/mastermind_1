@@ -16,7 +16,7 @@ from google.appengine.ext import ndb
 def verify_service(requestJSON, url):
       params = urllib.urlencode({'jsonrequest': requestJSON})
       print params
-      deadline = 60
+      deadline = 120
     
       result = urlfetch.fetch(url=url,
                                 payload=params,
